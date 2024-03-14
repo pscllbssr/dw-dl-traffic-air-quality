@@ -1,0 +1,441 @@
+{
+  "routes": [
+    {
+      "legs": [
+        {
+          "distanceMeters": 2194,
+          "duration": "347s",
+          "staticDuration": "402s",
+          "polyline": {
+            "encodedPolyline": "iag`Hqo_s@N^l@J\\FTFp@`@^\\\\VVV^XVT?BjBnBvApAp@n@PJPm@a@]SSkEkEc@a@STWDWW]Wm@g@c@WGCMC]GCOWWKMUu@AUFU?SEIKKyByBOOo@m@WUKKa@]QICCMG[Oc@Qm@WIEEGIGQFSH_@OYIeAs@][WOSMGEq@g@KGIGa@S_Ao@SQo@}@MSu@oAQi@Gg@Km@w@mFkA_GOs@QaAIwAq@sDYaBWeAMw@Ge@Gk@COEk@Ic@KWc@SEAYBODCD{@VUZADIZAd@Fn@?N"
+          },
+          "startLocation": {
+            "latLng": {
+              "latitude": 47.391093999999995,
+              "longitude": 8.5223266
+            }
+          },
+          "endLocation": {
+            "latLng": {
+              "latitude": 47.3988176,
+              "longitude": 8.533227799999999
+            }
+          },
+          "steps": [
+            {
+              "distanceMeters": 16,
+              "staticDuration": "3s",
+              "polyline": {
+                "encodedPolyline": "iag`Hqo_s@N^"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 47.391093999999995,
+                  "longitude": 8.5223266
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 47.391005299999996,
+                  "longitude": 8.5221672
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "DEPART",
+                "instructions": "Auf Escher-Wyss-Platz nach S\u00fcdwesten starten"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "16 m"
+                },
+                "staticDuration": {
+                  "text": "1 Minute"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 354,
+              "staticDuration": "67s",
+              "polyline": {
+                "encodedPolyline": "y`g`Hqn_s@l@J\\FTFp@`@^\\\\VVV^XVT?BjBnBvApAp@n@PJ"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 47.391005299999996,
+                  "longitude": 8.5221672
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 47.388240599999996,
+                  "longitude": 8.5199397
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_LEFT",
+                "instructions": "Links abbiegen auf Hardstrasse (Schilder nach Luzern/Route 4)"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0,4 km"
+                },
+                "staticDuration": {
+                  "text": "1 Minute"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 230,
+              "staticDuration": "47s",
+              "polyline": {
+                "encodedPolyline": "oof`Hs`_s@Pm@a@]SSkEkEc@a@ST"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 47.388240599999996,
+                  "longitude": 8.5199397
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 47.3897175,
+                  "longitude": 8.521498700000002
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_SHARP_LEFT",
+                "instructions": "Scharf links abbiegen, um auf Hardstrasse zu bleiben"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0,2 km"
+                },
+                "staticDuration": {
+                  "text": "1 Minute"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 194,
+              "staticDuration": "45s",
+              "polyline": {
+                "encodedPolyline": "wxf`Hkj_s@WDWW]Wm@g@c@WGCMC]GCOWWKMUu@AU"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 47.3897175,
+                  "longitude": 8.521498700000002
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 47.391096,
+                  "longitude": 8.5227588
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_RIGHT",
+                "instructions": "Nach rechts abbiegen, um auf Hardstrasse zu bleiben"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0,2 km"
+                },
+                "staticDuration": {
+                  "text": "1 Minute"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 179,
+              "staticDuration": "41s",
+              "polyline": {
+                "encodedPolyline": "kag`Hgr_s@FU?SEIKKyByBOOo@m@WUKK"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 47.391096,
+                  "longitude": 8.5227588
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 47.392264999999995,
+                  "longitude": 8.524165199999999
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_LEFT",
+                "instructions": "Links abbiegen auf Sihlquai/Wipkingerbr\u00fccke\nWeiter auf Wipkingerbr\u00fccke"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0,2 km"
+                },
+                "staticDuration": {
+                  "text": "1 Minute"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 484,
+              "staticDuration": "72s",
+              "polyline": {
+                "encodedPolyline": "shg`Ha{_s@a@]QICCMG[Oc@Qm@WIEEGIGQFSH_@OYIeAs@][WOSMGEq@g@KGIGa@S_Ao@SQo@}@MSu@oA"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 47.392264999999995,
+                  "longitude": 8.524165199999999
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 47.396059099999995,
+                  "longitude": 8.5269718
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "NAME_CHANGE",
+                "instructions": "Weiter auf Rosengartenstrasse/R\u00f6schibachstrasse\nWeiter auf Rosengartenstrasse"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0,5 km"
+                },
+                "staticDuration": {
+                  "text": "1 Minute"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 301,
+              "staticDuration": "29s",
+              "polyline": {
+                "encodedPolyline": "k`h`Hql`s@Qi@Gg@Km@w@mFkA_GOs@QaA"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 47.396059099999995,
+                  "longitude": 8.5269718
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 47.3970755,
+                  "longitude": 8.5306725
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "NAME_CHANGE",
+                "instructions": "Weiter auf Bucheggstrasse/Route 1/Route 4"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0,3 km"
+                },
+                "staticDuration": {
+                  "text": "1 Minute"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 146,
+              "staticDuration": "32s",
+              "polyline": {
+                "encodedPolyline": "wfh`Hucas@IwAq@sDYaB"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 47.3970755,
+                  "longitude": 8.5306725
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 47.397513700000005,
+                  "longitude": 8.532496799999999
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "RAMP_RIGHT",
+                "instructions": "Ausfahrt Richtung Koblenz/Oerlikon"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0,1 km"
+                },
+                "staticDuration": {
+                  "text": "1 Minute"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 122,
+              "staticDuration": "30s",
+              "polyline": {
+                "encodedPolyline": "mih`Hcoas@WeAMw@Ge@Gk@COEk@Ic@"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 47.397513700000005,
+                  "longitude": 8.532496799999999
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 47.3978799,
+                  "longitude": 8.5340162
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "NAME_CHANGE",
+                "instructions": "Weiter auf Bucheggstrasse"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0,1 km"
+                },
+                "staticDuration": {
+                  "text": "1 Minute"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 129,
+              "staticDuration": "23s",
+              "polyline": {
+                "encodedPolyline": "wkh`Hsxas@KWc@SEAYBODCD{@VUZADIZ"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 47.3978799,
+                  "longitude": 8.5340162
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 47.398848199999996,
+                  "longitude": 8.533737
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "NAME_CHANGE",
+                "instructions": "Bucheggstrasse verl\u00e4uft leicht nach links und wird zu Bucheggpl./Hofwiesenstrasse\nWeiter auf Bucheggpl."
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0,1 km"
+                },
+                "staticDuration": {
+                  "text": "1 Minute"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 39,
+              "staticDuration": "13s",
+              "polyline": {
+                "encodedPolyline": "yqh`H{vas@Ad@Fn@?N"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 47.398848199999996,
+                  "longitude": 8.533737
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 47.3988176,
+                  "longitude": 8.533227799999999
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_LEFT",
+                "instructions": "Links halten und auf Bucheggpl. bleiben"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "39 m"
+                },
+                "staticDuration": {
+                  "text": "1 Minute"
+                }
+              },
+              "travelMode": "DRIVE"
+            }
+          ],
+          "localizedValues": {
+            "distance": {
+              "text": "2,2 km"
+            },
+            "duration": {
+              "text": "6 Minuten"
+            },
+            "staticDuration": {
+              "text": "7 Minuten"
+            }
+          }
+        }
+      ],
+      "distanceMeters": 2194,
+      "duration": "347s",
+      "staticDuration": "400s",
+      "polyline": {
+        "encodedPolyline": "iag`Hqo_s@N^l@J\\FTFp@`@^\\\\VVV^XVT?BjBnBvApAp@n@PJPm@a@]SSkEkEc@a@STWDWW]Wm@g@c@WGCMC]GCOWWKMUu@AUFU?SEIKKyByBOOo@m@WUKKa@]QICCMG[Oc@Qm@WIEEGIGQFSH_@OYIeAs@][WOSMGEq@g@KGIGa@S_Ao@SQo@}@MSu@oAQi@Gg@Km@w@mFkA_GOs@QaAIwAq@sDYaBWeAMw@Ge@Gk@COEk@Ic@KWc@SEAYBODCD{@VUZADIZAd@Fn@?N"
+      },
+      "description": "Hardstrasse",
+      "viewport": {
+        "low": {
+          "latitude": 47.388149999999996,
+          "longitude": 8.5199397
+        },
+        "high": {
+          "latitude": 47.3988556,
+          "longitude": 8.5342489
+        }
+      },
+      "localizedValues": {
+        "distance": {
+          "text": "2,2 km"
+        },
+        "duration": {
+          "text": "6 Minuten"
+        },
+        "staticDuration": {
+          "text": "7 Minuten"
+        }
+      },
+      "routeToken": "CgA",
+      "routeLabels": [
+        "DEFAULT_ROUTE"
+      ]
+    }
+  ],
+  "geocodingResults": {
+    "origin": {
+      "geocoderStatus": {},
+      "type": [
+        "route"
+      ],
+      "placeId": "ChIJMSOixUEKkEcRWCgSriXEhVo"
+    },
+    "destination": {
+      "geocoderStatus": {},
+      "type": [
+        "route"
+      ],
+      "placeId": "ChIJi0egwGUKkEcRrZ5yFlTWtfM"
+    }
+  }
+}
