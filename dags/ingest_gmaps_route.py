@@ -72,9 +72,7 @@ def ingest_route(start: str, stop: str, via_lat: float, via_lon: float):
 def save_to_file(**kwargs) -> None:
     data = kwargs['ti'].xcom_pull(task_ids='ingest_route')
 
-    hook = S3Hook('S3_Dev')
-
-    print(kwargs)
+    hook = S3Hook('S3_Conn')
 
     print(f"saving data {data}")
 
@@ -87,6 +85,8 @@ def save_to_file(**kwargs) -> None:
     current_timestamp = datetime.now()
 
     key = os.path.join(kwargs['key_prefix'], kwargs['station'], f'{current_timestamp.isoformat()}.json')
+
+    print(f"write to {s3_bucket_name}/{key}")
 
     hook.load_string(json_data, key=key, bucket_name=s3_bucket_name)
 
