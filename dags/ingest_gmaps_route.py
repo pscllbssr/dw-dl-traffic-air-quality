@@ -96,7 +96,7 @@ def save_to_file(**kwargs) -> None:
 # Step 3: Creating DAG Object
 dag = DAG(dag_id='ingest_gmaps_route',
           default_args=default_args,
-          schedule_interval='@once',
+          schedule_interval='@hourly',
           catchup=False
           )
 
