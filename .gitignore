@@ -162,3 +162,5 @@ cython_debug/
 # exclude data
 data/*
 !data/.gitkeep
+
+*.pem
