@@ -164,3 +164,6 @@ data/*
 !data/.gitkeep
 
 *.pem
+
+# airflow docker-volumes
+/logs
