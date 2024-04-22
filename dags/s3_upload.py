@@ -14,7 +14,8 @@ def upload_to_s3(key_prefix: str) -> None:
     data = {
         "key1": "value1",
         "key2": "value2",
-        "key3": "value3"
+        "key3": "value3",
+        "key4": "value4"
     }
 
     # Convert dictionary to JSON
