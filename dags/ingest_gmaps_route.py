@@ -3,6 +3,7 @@
 # Importing datetime and timedelta modules for scheduling the DAGs
 import json
 import os
+import ast
 from datetime import datetime
 
 import requests
@@ -11,6 +12,7 @@ from airflow.models import Variable
 # Importing operators
 from airflow.operators.python import PythonOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+from airflow.providers.mysql.hooks.mysql import MySqlHook
 
 # Step 2: Initiating the default_args
 default_args = {
@@ -70,16 +72,47 @@ def save_to_s3(data, key_prefix, station):
     s3_bucket_name = Variable.get("S3_BUCKET_NAME")
     current_timestamp = datetime.now()
     key = os.path.join(key_prefix, station, f'{current_timestamp.isoformat()}.json')
-    hook.load_string(json_data, key=key, bucket_name=s3_bucket_name)
+    hook.load_string(json_data, key=key, bucket_name=s3_bucket_name)  # Function to save route data to S3
+
+
+def save_to_db(data, station):
+    data = ast.literal_eval(data).get('routes')[0]
+
+    # prepare data
+    distance = int(data.get('distanceMeters'))
+    duration = int(data.get('duration').replace('s', ''))
+    static_duration = int(data.get('staticDuration').replace('s', ''))
+    route_id = station
+
+    # Connect to the database
+    mysql_hook = MySqlHook(mysql_conn_id='datalake-db')
+    conn = mysql_hook.get_conn()
+
+    # Define the SQL query
+    sql_query = """
+        INSERT INTO route_request (distance, duration, static_duration, route_id) 
+        VALUES (%s, %s, %s, %s)
+    """
+
+    # Example data to insert
+    data = (distance, duration, static_duration, route_id)
+
+    # Execute the SQL query
+    with conn.cursor() as cursor:
+        cursor.execute(sql_query, data)
+        conn.commit()
+
+    # Close the connection
+    conn.close()
 
 
 # Define routes
 routes = [{
-   "start": "Stampfenbachstrasse 52, 8006 Zürich",
-   "stop": "Schaffhauserstrasse 40, 8006 Zürich",
-   "via_lat": 47.3868,
-   "via_lon": 8.5398,
-   "station_id": "Zch_Stampfenbachstrasse"
+    "start": "Stampfenbachstrasse 52, 8006 Zürich",
+    "stop": "Schaffhauserstrasse 40, 8006 Zürich",
+    "via_lat": 47.3868,
+    "via_lon": 8.5398,
+    "station_id": "Zch_Stampfenbachstrasse"
 }, {
    "start": "Splügenstrasse 14, 8002 Zürich",
    "stop": "Seebahnstrasse 110, 8003 ",
@@ -109,7 +142,6 @@ routes = [{
 # Define DAG
 with DAG(dag_id='ingest_gmaps_routes', default_args=default_args, schedule_interval='@hourly', catchup=False) as dag:
     for i, route in enumerate(routes):
-
         # Fetching the route ETA
         fetch_route_task_id = f'fetch_route_{i}_{route["station_id"]}'
         fetch_route_task = PythonOperator(
@@ -121,15 +153,15 @@ with DAG(dag_id='ingest_gmaps_routes', default_args=default_args, schedule_inter
             provide_context=True
         )
 
-        # Saving to S3 task
-        save_to_s3_task_id = f'save_to_s3_{i}_{route["station_id"]}'
-        save_to_s3_task = PythonOperator(
-            task_id=save_to_s3_task_id,
-            python_callable=save_to_s3,
+        # Saving to db task
+        save_to_db_task_id = f'save_to_db_{i}_{route["station_id"]}'
+        save_to_db_task = PythonOperator(
+            task_id=save_to_db_task_id,
+            python_callable=save_to_db,
             op_kwargs={'data': "{{ task_instance.xcom_pull(task_ids='" + fetch_route_task_id + "') }}",
-                       'key_prefix': 'gmaps_routes', 'station': f"station-Zch_Rosengartenstrasse_{i}"},
+                       'station': route['station_id']},
             provide_context=True
         )
 
         # Set up task dependencies
-        fetch_route_task >> save_to_s3_task
+        fetch_route_task >> save_to_db_task
