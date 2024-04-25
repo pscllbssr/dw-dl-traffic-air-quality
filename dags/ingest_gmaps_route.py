@@ -83,6 +83,7 @@ def save_to_db(data, station):
     duration = int(data.get('duration').replace('s', ''))
     static_duration = int(data.get('staticDuration').replace('s', ''))
     route_id = station
+    current_timestamp = datetime.now()
 
     # Connect to the database
     mysql_hook = MySqlHook(mysql_conn_id='datalake-db')
@@ -90,12 +91,12 @@ def save_to_db(data, station):
 
     # Define the SQL query
     sql_query = """
-        INSERT INTO route_request (distance, duration, static_duration, route_id) 
-        VALUES (%s, %s, %s, %s)
+        INSERT INTO route_request (distance, duration, static_duration, route_id, observed) 
+        VALUES (%s, %s, %s, %s, %s)
     """
 
     # Example data to insert
-    data = (distance, duration, static_duration, route_id)
+    data = (distance, duration, static_duration, route_id, current_timestamp)
 
     # Execute the SQL query
     with conn.cursor() as cursor:
