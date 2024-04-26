@@ -5,6 +5,7 @@ import json
 import os
 import ast
 from datetime import datetime
+import pytz
 
 import requests
 from airflow import DAG
@@ -22,6 +23,7 @@ default_args = {
 
 API_KEY = Variable.get("GMAPS_API_KEY")
 ROUTES_API_URL = "https://routes.googleapis.com/directions/v2:computeRoutes"
+LOCAL_TZ = pytz.timezone("Europe/Zurich")
 
 
 def get_route(start, end, via_lat, via_lon):
@@ -70,7 +72,7 @@ def save_to_s3(data, key_prefix, station):
     hook = S3Hook('S3_Conn')
     json_data = json.dumps(data)
     s3_bucket_name = Variable.get("S3_BUCKET_NAME")
-    current_timestamp = datetime.now()
+    current_timestamp = datetime.now(LOCAL_TZ)
     key = os.path.join(key_prefix, station, f'{current_timestamp.isoformat()}.json')
     hook.load_string(json_data, key=key, bucket_name=s3_bucket_name)  # Function to save route data to S3
 
@@ -83,7 +85,7 @@ def save_to_db(data, station):
     duration = int(data.get('duration').replace('s', ''))
     static_duration = int(data.get('staticDuration').replace('s', ''))
     route_id = station
-    current_timestamp = datetime.now()
+    current_timestamp = datetime.now(LOCAL_TZ)
 
     # Connect to the database
     mysql_hook = MySqlHook(mysql_conn_id='datalake-db')
