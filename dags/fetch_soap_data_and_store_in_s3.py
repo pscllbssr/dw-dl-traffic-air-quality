@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
-import requests
 from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
+from airflow.operators.python import PythonOperator
+from airflow.providers.mysql.hooks.mysql import MySqlHook
 
 default_args = {
     'owner': 'airflow',
@@ -14,49 +14,39 @@ default_args = {
 }
 
 dag = DAG(
-    'fetch_and_store_data',
+    'fetch_and_store_data_in_db',
     default_args=default_args,
-    description='DAG to fetch and store traffic data from SOAP API',
+    description='A DAG to fetch data from an API and store it in a SQL database',
     schedule_interval='@daily',
-    start_date=datetime(2024, 4, 12),
-    catchup=False,
+    start_date=datetime(2024, 4, 12)
 )
 
 def fetch_data():
-    url = "https://api.opentransportdata.swiss/TDP/Soap_Datex2/Pull"
-    headers = {
-        'Content-Type': 'text/xml; charset=utf-8',
-        'Authorization': 'Bearer eyJvcmciOiI2NDA2NTFhNTIyZmEwNTAwMDEyOWJiZTEiLCJpZCI6ImY0YzMxNDBkNDdiMTRlY2FiMjIwMDEyNjQ1NjFmY2Q0IiwiaCI6Im11cm11cjEyOCJ9',
-        'SOAPAction': 'http://opentransportdata.swiss/TDP/Soap_Datex2/Pull/v1/pullMeasuredData'
+    # Simulated API data fetching
+    return {
+        'location_id': 'Location123',
+        'vehicle_flow_rate': 100,
+        'measurement_time': '2024-04-12 12:00:00',
+        'num_input_values': 5,
+        'speed': 45.5
     }
-    payload = """<?xml version="1.0" encoding="UTF-8"?>
-    <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                        xmlns:dx223="http://datex2.eu/schema/2/2_0">
-        <SOAP-ENV:Body>
-            <dx223:d2LogicalModel xsi:type="dx223:D2LogicalModel" modelBaseVersion="2">
-                <dx223:exchange xsi:type="dx223:Exchange">
-                    <dx223:supplierIdentification xsi:type="dx223:InternationalIdentifier">
-                        <dx223:country xsi:type="dx223:CountryEnum">ch</dx223:country>
-                        <dx223:nationalIdentifier xsi:type="dx223:String">OTD</dx223:nationalIdentifier>
-                    </dx223:supplierIdentification>
-                </dx223:exchange>
-            </dx223:d2LogicalModel>
-        </SOAP-ENV:Body>
-    </SOAP-ENV:Envelope>"""
-
-    response = requests.post(url, headers=headers, data=payload)
-    if response.status_code == 200:
-        return response.text
-    else:
-        raise ValueError(f"Failed to fetch data: {response.status_code}, {response.text}")
 
 def store_data(**kwargs):
+    # Retrieve the data passed by the previous task
     data = kwargs['ti'].xcom_pull(task_ids='fetch_data')
-    with open('traffic_data.xml', 'w', encoding='utf-8') as file:
-        file.write(data)
-    print("Data fetched and written to 'traffic_data.xml'")
+    # Connect to the database
+    mysql_hook = MySqlHook(mysql_conn_id='datalake-db')
+    conn = mysql_hook.get_conn()
+    # Define the SQL query
+    sql_query = """
+        INSERT INTO traffic_flow_data (location_id, vehicle_flow_rate, measurement_time, num_input_values, speed) 
+        VALUES (%s, %s, %s, %s, %s)
+    """
+    # Execute the SQL query
+    with conn.cursor() as cursor:
+        cursor.execute(sql_query, (data['location_id'], data['vehicle_flow_rate'], data['measurement_time'], data['num_input_values'], data['speed']))
+        conn.commit()
+    conn.close()
 
 fetch_task = PythonOperator(
     task_id='fetch_data',
