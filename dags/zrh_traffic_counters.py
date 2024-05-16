@@ -69,7 +69,7 @@ dag = DAG(
     default_args=default_args,
     description='Fetch data from Open Data Zurich and save to MySQL database',
     schedule_interval='@daily',
-    catchup=False
+    catchup=True
 )
 
 fetch_data_task = PythonOperator(
