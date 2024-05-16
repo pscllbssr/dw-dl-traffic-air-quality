@@ -35,21 +35,22 @@ def save_to_database(**kwargs):
 
     print(df.info())
 
+    # Create a list of tuples containing the data to be inserted
+    data_to_insert = [
+        (row['MSID'], row['MessungDatZeit'], row['LieferDat'], row['AnzFahrzeuge'], row['AnzFahrzeugeStatus']) for
+        index, row in df.iterrows()]
+
     # Connect to the database
     mysql_hook = MySqlHook(mysql_conn_id='datalake-db')
     conn = mysql_hook.get_conn()
 
     # SQL query to insert DataFrame data into the database table
-    sql = f"INSERT INTO zrh_traffic_flow (station_id, observed, data_published, vehicle_count, vehicle_count_status) VALUES (%s, %s, %s, %s, %s)"
+    sql = "INSERT INTO zrh_traffic_flow (station_id, observed, data_published, vehicle_count, vehicle_count_status) VALUES (%s, %s, %s, %s, %s)"
 
-    # Execute the SQL query
+    # Execute the bulk insert operation
     with conn.cursor() as cursor:
-
-        # Iterate over each row in the DataFrame and execute the SQL query
-        for index, row in df.iterrows():
-            cursor.execute(sql, (row['MSID'], row['MessungDatZeit'], row['LieferDat'], row['AnzFahrzeuge'], row['AnzFahrzeugeStatus']))
-
-        # Commit your changes in the database
+        cursor.executemany(sql, data_to_insert)
+        # Commit changes
         conn.commit()
 
     # Close the cursor and database connection
