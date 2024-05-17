@@ -6,6 +6,13 @@ from airflow.providers.mysql.hooks.mysql import MySqlHook
 # from sklearn import preprocessing
 import pandas as pd
 
+ZURICH_TRAFFIC_STATIONS = [
+    'Z038M001', 'Z038M002', # Rosengarten*
+    'Z033M001', 'Z033M002', 'Z028M001', 'Z028M002', # Stampfenbachstrasse
+    'Z106M001', 'Z106M002', # Heubeeribüel
+    'Z068M001', 'Z068M002' # Schimmelstrasse
+]
+
 def min_max_scale(x):
     mn, mx = x.min(), x.max()
     x_scaled = (x - mn) / (mx - mn)
@@ -103,9 +110,10 @@ FROM route_request rr
 WHERE observed IS NOT NULL
 """
 
-query_zrh_traffic = """SELECT station_id, observed, data_published, vehicle_count, vehicle_count_status
+query_zrh_traffic = f"""SELECT station_id, observed, data_published, vehicle_count, vehicle_count_status
 FROM `traffic-air-quality`.zrh_traffic_flow
-WHERE vehicle_count_status != 'Fehlend';
+WHERE vehicle_count_status != 'Fehlend' 
+AND station_id IN ('{"','".join(ZURICH_TRAFFIC_STATIONS)}');
 """
 
 query_federal_traffic = """SELECT id, location_id, vehicle_flow_rate, measurement_time, num_input_values, speed
