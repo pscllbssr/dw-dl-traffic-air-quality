@@ -3,7 +3,6 @@ from datetime import datetime
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.providers.mysql.hooks.mysql import MySqlHook
-# from sklearn import preprocessing
 import pandas as pd
 
 ZURICH_TRAFFIC_STATIONS = [
