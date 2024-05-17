@@ -32,7 +32,7 @@ def transform_data(ti):
     df['observed'] = df['observed'].dt.floor('h')
 
     # drop duplicates
-    df = df.drop_duplicates(subset=['route_id', 'observed'])
+    df = df.drop_duplicates(subset=['route_id', 'observed', 'param'])
 
     print(df.info())
 
