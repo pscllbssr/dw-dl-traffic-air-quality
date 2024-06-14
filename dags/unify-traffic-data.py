@@ -5,6 +5,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.providers.mysql.hooks.mysql import MySqlHook
 
+# counters near to air quality stations
 ZURICH_TRAFFIC_STATIONS = [
     'Z038M001', 'Z038M002',  # Rosengarten*
     'Z033M001', 'Z033M002', 'Z028M001', 'Z028M002',  # Stampfenbachstrasse
@@ -12,6 +13,7 @@ ZURICH_TRAFFIC_STATIONS = [
     'Z068M001', 'Z068M002'  # Schimmelstrasse
 ]
 
+# min max scaler function
 def min_max_scale(x):
     mn, mx = x.min(), x.max()
     x_scaled = (x - mn) / (mx - mn)
@@ -31,11 +33,8 @@ def merge_dataframes(ti):
     df2 = ti.xcom_pull(task_ids='fetch_zrh_traffic')
     df3 = ti.xcom_pull(task_ids='fetch_federal_traffic')
 
-    # min_max_scaler = preprocessing.MinMaxScaler()
-
     # transfrom google routes
     df1['time_per_distance'] = df1.duration / df1.distance
-    # df1['value'] = min_max_scaler.fit_transform(df1[['time_per_distance']].values)
     df1['value'] = min_max_scale(df1.time_per_distance)
     df1 = df1[['route_id', 'value', 'observed', 'time_per_distance']]
     df1.rename(columns={'route_id': 'station_id', 'time_per_distance': 'original_value'}, inplace=True)
@@ -43,7 +42,6 @@ def merge_dataframes(ti):
     df1.loc[:, 'original_value_unit'] = 'travel time [s/m]'
 
     # transform zurich traffic data
-    # df2['value'] = min_max_scaler.fit_transform(df2[['vehicle_flow_rate']].values)
     df2['value'] = min_max_scale(df2['vehicle_count'])
     df2 = df2[['station_id', 'value', 'observed', 'vehicle_count']]
     df2.rename(columns={'vehicle_count': 'original_value'}, inplace=True)

@@ -15,13 +15,12 @@ def fetch_data_from_api(execution_date, **kwargs):
     # Calculate the date of yesterday
     one_day_before_execution_date = execution_date.date() - timedelta(days=1)
 
-    print(type(one_day_before_execution_date))
-
     print(f"Air Quality ZRH: getting entries for {one_day_before_execution_date.strftime('%Y-%m-%d')}")
 
     # Filter rows where 'Datum' equals to yesterday
     filtered_df = df[df['Datum'].dt.date == one_day_before_execution_date]
 
+    # rename columns to match database columns
     filtered_df.rename(columns={
         'Datum': 'observed',
         'Standort': 'route_id',

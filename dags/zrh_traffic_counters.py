@@ -16,12 +16,12 @@ def fetch_data_from_api(execution_date, **kwargs):
         parse_dates=['MessungDatZeit', 'LieferDat']
     )
 
-    # Calculate the date of yesterday
+    # Calculate the date of day before yesterday (resp. the execution date)
     two_days_before_today = execution_date.date() - timedelta(days=2)
 
     print(f"Traffic flow ZRH: getting entries for {two_days_before_today.strftime('%Y-%m-%d')}")
 
-    # Filter rows where 'Datum' equals to yesterday
+    # Filter rows where 'Datum' equals to the day before yesterday
     filtered_df = df[df['MessungDatZeit'].dt.date == two_days_before_today]
 
     return filtered_df
