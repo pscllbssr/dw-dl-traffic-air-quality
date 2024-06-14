@@ -65,3 +65,7 @@ Make sure to add all other necessary variables:
 ## Develop
 
 Create new DAGs in the `/dags`-folder. As it is mounted as a volume to the docker-container, new dags should appear in the web-interface after some seconds. 
+
+## Notebooks
+
+To try out things, explore new data or test hypotheses, `/notebooks` is your place. There is a loose collection of notebooks on the used datasets.
