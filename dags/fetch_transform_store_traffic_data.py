@@ -1,12 +1,13 @@
+import logging
+import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
+
+import pandas as pd
+import requests
 from airflow import DAG
+from airflow.models import Variable
 from airflow.operators.python import PythonOperator
 from airflow.providers.mysql.hooks.mysql import MySqlHook
-from airflow.models import Variable
-import requests
-import pandas as pd
-import xml.etree.ElementTree as ET
-import logging
 
 default_args = {
     'owner': 'airflow',
@@ -23,8 +24,10 @@ dag = DAG(
     default_args=default_args,
     description='A DAG to fetch, process, and store traffic data from an API to a SQL database',
     schedule_interval=timedelta(hours=1),  # Run every hour
-    catchup=False
+    catchup=False,
+    tags=["data-lake"]
 )
+
 
 def fetch_data(**kwargs):
     token = Variable.get("API_TOKEN")
@@ -56,6 +59,7 @@ def fetch_data(**kwargs):
     else:
         raise ValueError(f"Failed to fetch data: {response.status_code} {response.text}")
 
+
 def parse_and_process_data(**kwargs):
     xml_data = kwargs['ti'].xcom_pull(key='raw_data')
     try:
@@ -73,13 +77,15 @@ def parse_and_process_data(**kwargs):
         measurement_time = measurement_time_elem.text if measurement_time_elem is not None else None
         for measured_val in site_meas.findall('.//dx223:measuredValue', ns):
             index = measured_val.get('index')
-            vehicle_type = 'Light Vehicles' if index in ['11', '12'] else 'Heavy Vehicles' if index == '21' else 'Unclassified'
+            vehicle_type = 'Light Vehicles' if index in ['11',
+                                                         '12'] else 'Heavy Vehicles' if index == '21' else 'Unclassified'
             vehicle_flow_rate_elem = measured_val.find('.//dx223:vehicleFlowRate', ns)
             vehicle_flow_rate = vehicle_flow_rate_elem.text if vehicle_flow_rate_elem is not None else None
             speed_elem = measured_val.find('.//dx223:speed', ns)
             speed = speed_elem.text if speed_elem is not None else None
             num_input_values_elem = measured_val.find('.//dx223:averageVehicleSpeed', ns)
-            num_input_values = num_input_values_elem.get('numberOfInputValuesUsed') if num_input_values_elem is not None else None
+            num_input_values = num_input_values_elem.get(
+                'numberOfInputValuesUsed') if num_input_values_elem is not None else None
             data_records.append({
                 'site_id': site_id,
                 'measurement_time': measurement_time,
@@ -104,7 +110,8 @@ def parse_and_process_data(**kwargs):
         'num_input_values': 0
     }, inplace=True)
 
-    traffic_data_unique = df.drop_duplicates(subset=['site_id', 'measurement_time', 'vehicle_flow_rate', 'speed', 'num_input_values'])
+    traffic_data_unique = df.drop_duplicates(
+        subset=['site_id', 'measurement_time', 'vehicle_flow_rate', 'speed', 'num_input_values'])
     aggregated_data = traffic_data_unique.groupby('site_id').agg({
         'vehicle_flow_rate': 'sum',
         'measurement_time': 'first',
@@ -118,7 +125,8 @@ def parse_and_process_data(**kwargs):
         'num_input_values': 'sum',
         'speed': 'mean'
     }).reset_index()
-    station_ids = ['CH:0581', 'CH:0813', 'CH:0066', 'CH:0383', 'CH:0577', 'CH:0240', 'CH:0020', 'CH:03287', 'CH:0194', 'CH:0301', 'CH:0562']
+    station_ids = ['CH:0581', 'CH:0813', 'CH:0066', 'CH:0383', 'CH:0577', 'CH:0240', 'CH:0020', 'CH:03287', 'CH:0194',
+                   'CH:0301', 'CH:0562']
     specific_locations_data = aggregated_data_by_location[aggregated_data_by_location['location_id'].isin(station_ids)]
     aggregated_specific_locations = specific_locations_data.groupby('location_id').agg({
         'vehicle_flow_rate': 'sum',
@@ -127,8 +135,10 @@ def parse_and_process_data(**kwargs):
         'speed': 'mean'
     }).reset_index()
 
-    aggregated_specific_locations['measurement_time'] = aggregated_specific_locations['measurement_time'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    aggregated_specific_locations['measurement_time'] = aggregated_specific_locations['measurement_time'].dt.strftime(
+        '%Y-%m-%d %H:%M:%S')
     kwargs['ti'].xcom_push(key='processed_data', value=aggregated_specific_locations.to_dict(orient='records'))
+
 
 def store_data(**kwargs):
     data = kwargs['ti'].xcom_pull(key='processed_data')
@@ -145,9 +155,13 @@ def store_data(**kwargs):
 
     with conn.cursor() as cursor:
         for record in data:
-            cursor.execute(sql_query, (record['location_id'], record['vehicle_flow_rate'], record['measurement_time'], record['num_input_values'], record['speed']))
+            cursor.execute(sql_query, (
+                record['location_id'], record['vehicle_flow_rate'], record['measurement_time'],
+                record['num_input_values'],
+                record['speed']))
         conn.commit()
     conn.close()
+
 
 with dag:
     t1 = PythonOperator(

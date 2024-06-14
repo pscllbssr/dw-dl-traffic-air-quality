@@ -30,7 +30,7 @@ def fetch_data_from_api(execution_date, **kwargs):
 def save_to_database(**kwargs):
     df = kwargs['task_instance'].xcom_pull(task_ids='fetch_data')
 
-    # replace nan with None for MySQL
+    # replace nan with -1 for MySQL
     df['AnzFahrzeuge'] = df['AnzFahrzeuge'].apply(lambda x: -1 if pd.isna(x) else x)
 
     print(df.info())
@@ -69,7 +69,8 @@ dag = DAG(
     default_args=default_args,
     description='Fetch data from Open Data Zurich and save to MySQL database',
     schedule_interval='@daily',
-    catchup=True
+    catchup=True,
+    tags=["data-lake"]
 )
 
 fetch_data_task = PythonOperator(

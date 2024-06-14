@@ -35,7 +35,8 @@ with DAG(
         dag_id='s3_dag',
         schedule_interval='@daily',
         start_date=datetime(2024, 4, 12),
-        catchup=False
+        catchup=False,
+        tags=["development"]
 ) as dag:
     # Upload the file
     task_upload_to_s3 = PythonOperator(

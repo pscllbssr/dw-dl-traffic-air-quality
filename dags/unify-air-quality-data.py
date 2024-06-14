@@ -70,7 +70,8 @@ dag = DAG(
     default_args=default_args,
     description='transform air-quality data from data lake and store into data warehouse',
     schedule_interval=None,
-    catchup=False
+    catchup=False,
+    tags=["data-warehouse"]
 )
 
 fetch_data = PythonOperator(

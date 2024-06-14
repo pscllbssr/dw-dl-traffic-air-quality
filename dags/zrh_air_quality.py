@@ -74,7 +74,8 @@ dag = DAG(
     default_args=default_args,
     description='Fetch data from API and save to MySQL database',
     schedule_interval='@daily',
-    catchup=True
+    catchup=True,
+    tags=["data-lake"]
 )
 
 fetch_data_task = PythonOperator(

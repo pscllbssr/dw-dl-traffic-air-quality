@@ -1,15 +1,15 @@
 from datetime import datetime
 
+import pandas as pd
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.providers.mysql.hooks.mysql import MySqlHook
-import pandas as pd
 
 ZURICH_TRAFFIC_STATIONS = [
-    'Z038M001', 'Z038M002', # Rosengarten*
-    'Z033M001', 'Z033M002', 'Z028M001', 'Z028M002', # Stampfenbachstrasse
-    'Z106M001', 'Z106M002', # Heubeeribüel
-    'Z068M001', 'Z068M002' # Schimmelstrasse
+    'Z038M001', 'Z038M002',  # Rosengarten*
+    'Z033M001', 'Z033M002', 'Z028M001', 'Z028M002',  # Stampfenbachstrasse
+    'Z106M001', 'Z106M002',  # Heubeeribüel
+    'Z068M001', 'Z068M002'  # Schimmelstrasse
 ]
 
 def min_max_scale(x):
@@ -27,15 +27,15 @@ def fetch_data_from_mariadb(connection_id, query):
 
 # Function to merge dataframes
 def merge_dataframes(ti):
-    df1 = ti.xcom_pull(task_ids='fetch_data_from_source1')
-    df2 = ti.xcom_pull(task_ids='fetch_data_from_source2')
-    df3 = ti.xcom_pull(task_ids='fetch_data_from_source3')
+    df1 = ti.xcom_pull(task_ids='fetch_google_routes')
+    df2 = ti.xcom_pull(task_ids='fetch_zrh_traffic')
+    df3 = ti.xcom_pull(task_ids='fetch_federal_traffic')
 
     # min_max_scaler = preprocessing.MinMaxScaler()
 
     # transfrom google routes
     df1['time_per_distance'] = df1.duration / df1.distance
-    #df1['value'] = min_max_scaler.fit_transform(df1[['time_per_distance']].values)
+    # df1['value'] = min_max_scaler.fit_transform(df1[['time_per_distance']].values)
     df1['value'] = min_max_scale(df1.time_per_distance)
     df1 = df1[['route_id', 'value', 'observed', 'time_per_distance']]
     df1.rename(columns={'route_id': 'station_id', 'time_per_distance': 'original_value'}, inplace=True)
@@ -43,7 +43,7 @@ def merge_dataframes(ti):
     df1.loc[:, 'original_value_unit'] = 'travel time [s/m]'
 
     # transform zurich traffic data
-    #df2['value'] = min_max_scaler.fit_transform(df2[['vehicle_flow_rate']].values)
+    # df2['value'] = min_max_scaler.fit_transform(df2[['vehicle_flow_rate']].values)
     df2['value'] = min_max_scale(df2['vehicle_count'])
     df2 = df2[['station_id', 'value', 'observed', 'vehicle_count']]
     df2.rename(columns={'vehicle_count': 'original_value'}, inplace=True)
@@ -76,7 +76,7 @@ def merge_dataframes(ti):
 
 
 # Function to store dataframe to MariaDB using MySqlHook
-def store_data_to_mariadb(connection_id, table_name, **context):
+def store_to_traffic_table(connection_id, table_name, **context):
     merged_df = context['ti'].xcom_pull(task_ids='merge_dataframes')
 
     print('storing info:')
@@ -85,6 +85,7 @@ def store_data_to_mariadb(connection_id, table_name, **context):
     hook = MySqlHook(mysql_conn_id=connection_id)
     engine = hook.get_sqlalchemy_engine()
     merged_df.to_sql(table_name, con=engine, if_exists='replace', index=False)
+
 
 # DAG definition
 default_args = {
@@ -101,7 +102,8 @@ dag = DAG(
     default_args=default_args,
     description='Unify different traffic sources from data lake and store into data warehouse',
     schedule_interval=None,
-    catchup=False
+    catchup=False,
+    tags=["data-warehouse"]
 )
 
 query_routes = """SELECT rr.distance, rr.duration, rr.static_duration, rr.observed, rr.route_id
@@ -120,21 +122,21 @@ FROM `traffic-air-quality`.traffic_flow_data;
 """
 
 fetch_data1 = PythonOperator(
-    task_id='fetch_data_from_source1',
+    task_id='fetch_google_routes',
     python_callable=fetch_data_from_mariadb,
     op_kwargs={'connection_id': 'datalake-db', 'query': query_routes},
     dag=dag,
 )
 
 fetch_data2 = PythonOperator(
-    task_id='fetch_data_from_source2',
+    task_id='fetch_zrh_traffic',
     python_callable=fetch_data_from_mariadb,
     op_kwargs={'connection_id': 'datalake-db', 'query': query_zrh_traffic},
     dag=dag,
 )
 
 fetch_data3 = PythonOperator(
-    task_id='fetch_data_from_source3',
+    task_id='fetch_federal_traffic',
     python_callable=fetch_data_from_mariadb,
     op_kwargs={'connection_id': 'datalake-db', 'query': query_federal_traffic},
     dag=dag,
@@ -148,8 +150,8 @@ merge_task = PythonOperator(
 )
 
 store_data = PythonOperator(
-    task_id='store_data_to_mariadb',
-    python_callable=store_data_to_mariadb,
+    task_id='store_to_traffic_table',
+    python_callable=store_to_traffic_table,
     op_kwargs={'connection_id': 'datawarehouse-db', 'table_name': 'traffic'},
     provide_context=True,
     dag=dag,

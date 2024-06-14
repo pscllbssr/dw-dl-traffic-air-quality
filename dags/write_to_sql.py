@@ -1,7 +1,8 @@
+from datetime import datetime, timedelta
+
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.providers.mysql.hooks.mysql import MySqlHook
-from datetime import datetime, timedelta
 
 # Define the default arguments for the DAG
 default_args = {
@@ -19,8 +20,10 @@ dag = DAG(
     'write_to_route_request',
     default_args=default_args,
     description='A DAG to write a record into the route-request table',
-    schedule_interval='@once'
+    schedule_interval='@once',
+    tags=["development"]
 )
+
 
 # Function to write record into route-request table
 def write_to_route_request():
@@ -34,7 +37,7 @@ def write_to_route_request():
         VALUES (%s, %s, %s)
     """
     # Example data to insert
-    data = (2000,100,100)
+    data = (2000, 100, 100)
 
     # Execute the SQL query
     with conn.cursor() as cursor:
@@ -43,6 +46,7 @@ def write_to_route_request():
 
     # Close the connection
     conn.close()
+
 
 # Define the task to execute the Python function
 write_to_route_request_task = PythonOperator(

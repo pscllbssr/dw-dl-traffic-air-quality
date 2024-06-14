@@ -17,7 +17,8 @@ dag = DAG(
     'fetch_and_store_data',
     description='A DAG to fetch data from an API and store it to a local file',
     schedule_interval='@daily',
-    start_date=datetime(2024, 4, 12)
+    start_date=datetime(2024, 4, 12),
+    tags=["development"]
 )
 
 
